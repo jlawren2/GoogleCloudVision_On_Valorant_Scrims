@@ -86,12 +86,12 @@ def parse_gcv_misc(misc_image)->list:
     return MISC
 
 def parse_gcv_sid(MISC):
-    SID_regex = r"^[0-9]{8}" # matches any amount of starting numbers for MMDDYYYY - valorant may output MMDYYYY
+    SID_regex = r"^[A-Z]+[0-9]+[A-Z]+[0-9]{4}" # matches any amount of starting numbers for MONTHDDYY - valorant may output MONTHMDYYYY
 
-    SID = MISC[0] + MISC[1] + MISC[2] + MISC[3] + MISC[4][0] + MISC[4][1] + MISC[4][3] + MISC[4][4] # scrim id (scrim id is MMDDYYYYMAPDURATION) example: 10302022BREEZE2356
+    SID = MISC[0] + MISC[1] + MISC[2] + MISC[3] + MISC[4][0] + MISC[4][1] + MISC[4][3] + MISC[4][4] # scrim id (scrim id is MONTHDDYYYYMAPDURATION) example: OCT302022BREEZE2356
 
     if bool(re.match(SID_regex, SID)): # make sure that SID is correct format (not a huge deal just making sure GCV output is as expected)
-        print(f'Scrim ID or SID does not match regex created: SID should be MMDDYYYYMAPDURATION example: 10302022BREEZE2356. Got: {SID}')
+        print(f'Scrim ID or SID does not match regex created: SID should be MONTHDDYYMAPDURATION example: OCT302022BREEZE2356. Got: {SID}')
     return SID
 
 def parse_gcv_ign(ign_image_prefix)->list:
@@ -165,7 +165,7 @@ def parse_gcv_stat_col(MAP, SID, stats_dict)->dict:
             stats_dict['KDA'] = np.divide(np.add(k, a), d) # creating KDA by element wise multiplication and division
         else: # normal column of stats can append to dictionary and process with GCV
             stats_dict[stat] = google_cloud_vision(stat+'.png')[1:] # adds GCV output to dictionary at the current stat
-    stats_dict['SID'] = [SID for i in range(10)] # populates stats_dict with list of the scrim id (scrim id is MMDDYYYYMAPDURATION) example: 10302022BREEZE2356
+    stats_dict['SID'] = [SID for i in range(10)] # populates stats_dict with list of the scrim id (scrim id is MONTHDDYYYYMAPDURATION) example: OCT302022BREEZE2356
     stats_dict['MAP'] = [MAP for i in range(10)] # populates stats_dict with list of the map to make for better groups joins and pivots
 
     try:
@@ -175,6 +175,6 @@ def parse_gcv_stat_col(MAP, SID, stats_dict)->dict:
     
     return SB
 
+
 if __name__ == "__main__":    
     read_screenshots('scorescreen.png', 'summary.png')
-
